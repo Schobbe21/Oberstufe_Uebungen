@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sprachlabor · Syntax & Bedeutung</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Germania+One&family=Oswald:wght@500;600;700&display=swap');
+:root{
+  --paper:#eee8da; --paper2:#e4ddcc; --ink:#202522; --muted:#686b64;
+  --accent:#c55a3d; --olive:#7b7f55; --yellow:#c8a64b; --panel:#f7f2e7;
+  --shadow:0 8px 24px rgba(38,41,35,.12);
+}
+*{box-sizing:border-box} html{scroll-behavior:smooth}
+body{margin:0;color:var(--ink);background:
+linear-gradient(rgba(32,37,34,.025) 1px,transparent 1px),
+linear-gradient(90deg,rgba(32,37,34,.025) 1px,transparent 1px),var(--paper);
+background-size:24px 24px;font-family:Arial,Helvetica,sans-serif}
+button{font:inherit;color:inherit}
+header{border-bottom:4px solid var(--ink);background:rgba(238,232,218,.96);position:sticky;top:0;z-index:20;backdrop-filter:blur(8px)}
+.header-inner{max-width:1180px;margin:auto;padding:18px 24px 14px;display:flex;align-items:flex-end;justify-content:space-between;gap:20px}
+.brand small{display:block;font-size:.72rem;letter-spacing:.22em;font-weight:800;color:var(--accent);margin-bottom:5px}
+.brand h1{margin:0;font-size:clamp(1.4rem,3vw,2.2rem);letter-spacing:.04em}
+.brand p{margin:5px 0 0;color:var(--muted);font-size:.92rem}
+.progress-wrap{min-width:240px}.progress-label{display:flex;justify-content:space-between;font-size:.72rem;font-weight:800;letter-spacing:.08em;margin-bottom:6px}
+.progress-track{height:10px;border:2px solid var(--ink);background:var(--panel)}.progress-bar{height:100%;width:0;background:var(--olive);transition:width .3s ease}
+main{max-width:1180px;margin:auto;padding:34px 24px 80px}
+.section{background:rgba(247,242,231,.84);border:3px solid var(--ink);box-shadow:var(--shadow);margin:0 0 34px}
+.section-head{display:grid;grid-template-columns:86px 1fr;border-bottom:3px solid var(--ink)}
+.section-no{display:grid;place-items:center;background:var(--ink);color:var(--paper);font-size:2rem;font-weight:900;letter-spacing:.04em}
+.section-title{padding:18px 22px}.section-title .kicker{font-size:.7rem;letter-spacing:.18em;font-weight:900;color:var(--accent)}
+.section-title h2{margin:4px 0 5px;font-size:1.45rem;letter-spacing:.04em}.section-title p{margin:0;color:var(--muted);line-height:1.45}
+.section-body{padding:24px}.legend{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.legend span{border:2px solid var(--ink);padding:7px 10px;font-weight:800;font-size:.8rem;background:var(--paper)}
+.mode-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.mode-btn,.small-btn,.answer-btn,.slot-choice{border:2px solid var(--ink);background:var(--paper);padding:9px 12px;font-weight:900;cursor:pointer;box-shadow:3px 3px 0 var(--ink);transition:.12s}
+.mode-btn:hover,.small-btn:hover,.answer-btn:hover,.slot-choice:hover{transform:translate(-1px,-1px);box-shadow:5px 5px 0 var(--ink)}
+.mode-btn.active{background:var(--yellow)}
+.lab-card{border:2px solid var(--ink);background:var(--panel);padding:18px;margin-top:14px}
+.lab-card h3{margin:0 0 12px;font-size:1rem;letter-spacing:.08em}
+.formula{display:grid;grid-template-columns:90px minmax(0,1fr);gap:14px;align-items:center;padding:15px 0;border-bottom:1px dashed rgba(32,37,34,.35)}
+.formula:last-child{border-bottom:0}
+.structure-work{display:grid;grid-template-columns:minmax(280px,1fr) minmax(280px,1fr) auto;gap:12px;align-items:center}
+.structure-row-feedback{min-width:34px;font-size:1.25rem;font-weight:1000}
+@media(max-width:900px){.structure-work{grid-template-columns:1fr}.structure-row-feedback{min-height:24px}}
+.formula-label{font-weight:900;letter-spacing:.08em;text-align:center}
+.drop-zone{min-height:68px;border:2px dashed var(--muted);padding:10px 14px;display:flex;gap:0;align-items:center;flex-wrap:wrap;background:#f4efe3}
+.bank{display:flex;gap:18px;flex-wrap:wrap;padding:12px 16px;border:2px solid var(--ink);background:var(--paper2);margin-top:16px;min-height:68px}
+.piece{
+  --piece-bg:var(--paper);
+  --join-bg:var(--panel);
+  position:relative;
+  z-index:1;
+  border:3px solid var(--ink);
+  border-radius:3px;
+  background:var(--piece-bg);
+  padding:13px 26px;
+  min-height:54px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:900;
+  cursor:grab;
+  user-select:none;
+  box-shadow:3px 4px 0 rgba(32,37,34,.18);
+  transition:transform .12s ease,box-shadow .12s ease,background .18s ease;
+  margin:0;
+}
+
+/* MALE SIDE: round tab like the reference image */
+.drop-zone .piece:not(:last-child)::after,
+.sentence-board .piece:not(:last-child)::after,
+.bank .piece:not(:last-child)::after{
+  content:"";
+  position:absolute;
+  z-index:4;
+  width:28px;
+  height:28px;
+  right:-17px;
+  top:50%;
+  transform:translateY(-50%);
+  border:3px solid var(--ink);
+  border-left:0;
+  border-radius:0 50% 50% 0;
+  background:var(--piece-bg);
+}
+
+/* FEMALE SIDE: clean inward rounded socket */
+.drop-zone .piece:not(:first-child)::before,
+.sentence-board .piece:not(:first-child)::before,
+.bank .piece:not(:first-child)::before{
+  content:"";
+  position:absolute;
+  z-index:5;
+  width:28px;
+  height:28px;
+  left:-3px;
+  top:50%;
+  transform:translate(-50%,-50%);
+  border:3px solid var(--ink);
+  border-radius:50%;
+  background:var(--join-bg);
+}
+
+/* hide the left half of the circular "hole" so only the inward semicircle remains */
+.drop-zone .piece:not(:first-child) .dummy,
+.sentence-board .piece:not(:first-child) .dummy{display:none}
+
+/* bank uses its own background inside the socket */
+.bank .piece{--join-bg:var(--paper2)}
+
+/* lock pieces together tightly */
+.drop-zone .piece + .piece,
+.sentence-board .piece + .piece,
+.bank .piece + .piece{
+  margin-left:14px;
+}
+
+/* keep first and last outer edges completely flat */
+.drop-zone .piece:first-child,
+.sentence-board .piece:first-child,
+.bank .piece:first-child{border-top-left-radius:3px;border-bottom-left-radius:3px}
+.drop-zone .piece:last-child,
+.sentence-board .piece:last-child,
+.bank .piece:last-child{border-top-right-radius:3px;border-bottom-right-radius:3px}
+
+.piece:hover{
+  transform:translateY(-2px);
+  box-shadow:4px 6px 0 rgba(32,37,34,.24)
+}
+.piece.dragging{opacity:.5;transform:rotate(-1deg) scale(1.02)}
+.piece.selected{outline:4px solid var(--yellow);outline-offset:3px}
+.piece.correct{
+  --piece-bg:#dfe5c9;
+  background:var(--piece-bg);
+  animation:lockIn .34s ease both
+}
+@keyframes lockIn{
+  0%{transform:translateY(-5px) scale(1.03)}
+  55%{transform:translateY(2px) scale(.985)}
+  100%{transform:translateY(0) scale(1)}
+}
+@keyframes successPulse{
+  0%{box-shadow:0 0 0 0 rgba(123,127,85,.45)}
+  55%{box-shadow:0 0 0 12px rgba(123,127,85,0)}
+  100%{box-shadow:0 0 0 0 rgba(123,127,85,0)}
+}
+@keyframes scorePop{
+  0%{transform:scale(1)}
+  45%{transform:scale(1.22)}
+  100%{transform:scale(1)}
+}
+.success-pop{animation:successPulse .55s ease}
+.score-pop{animation:scorePop .35s ease}
+.slot-choice.good-flash,.answer-btn.correct-choice{
+  background:#dfe5c9;
+  animation:successPulse .55s ease,scorePop .28s ease;
+}
+
+.feedback{min-height:26px;margin-top:12px;font-weight:900}.feedback.good{color:#49603e}.feedback.bad{color:#a13f2c}
+.puzzle-top{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+.counter{font-size:.8rem;font-weight:900;letter-spacing:.08em}
+.sentence-board{border:2px solid var(--ink);background:#f6f0e4;padding:15px 18px;min-height:80px;display:flex;flex-wrap:wrap;gap:0;align-items:center}
+.controls{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}
+.slot-machine{display:grid;grid-template-columns:minmax(0,1fr) 240px;gap:22px;align-items:stretch}
+.reel{border:3px solid var(--ink);background:var(--paper2);min-height:210px;display:grid;place-items:center;text-align:center;padding:24px;position:relative;overflow:hidden}
+.reel::before,.reel::after{content:"";position:absolute;left:0;right:0;height:13px;background:var(--ink)}.reel::before{top:0}.reel::after{bottom:0}
+.reel-word{font-size:clamp(2rem,6vw,4.2rem);font-weight:1000;letter-spacing:.03em;text-transform:uppercase}
+.money{border:3px solid var(--ink);background:var(--ink);color:var(--paper);display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:20px}
+.money small{letter-spacing:.18em;font-weight:800}.money strong{font-size:2.3rem;margin-top:8px}
+.slot-choices{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:16px}.slot-choice{padding:14px}
+.definition-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.word-pair{border:3px solid var(--ink);display:grid;grid-template-columns:1fr 60px 1fr;align-items:center;text-align:center;background:var(--paper2);margin-bottom:18px}
+.word-pair div{padding:18px;font-size:1.5rem;font-weight:1000}.word-pair .arrow{background:var(--ink);color:var(--paper);align-self:stretch;display:grid;place-items:center;padding:0}
+.question-box{border:2px solid var(--ink);background:var(--panel);padding:16px}.question-box h3{font-size:1rem;margin:0 0 12px;line-height:1.4}
+.answers{display:grid;gap:9px}.answer-btn{text-align:left;box-shadow:none}.answer-btn.correct-choice{background:#dfe5c9}.answer-btn.wrong-choice{background:#edc9bf}
+.meter{margin-top:16px;border-top:2px solid var(--ink);padding-top:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.meter .tag{padding:9px 11px;border:2px solid var(--ink);font-weight:900;background:var(--paper);line-height:1.35}.meter .tag small{font-weight:700;color:var(--muted)}
+.summary{border:3px solid var(--ink);background:var(--yellow);padding:18px;margin-top:22px;display:none}.summary.show{display:block}.summary h3{margin:0 0 8px}
+.note{font-size:.82rem;color:var(--muted);line-height:1.45}
+@media(max-width:800px){
+.header-inner{align-items:flex-start;flex-direction:column}.progress-wrap{width:100%}.section-head{grid-template-columns:62px 1fr}.section-body{padding:16px}
+.formula{grid-template-columns:1fr}.formula-label{text-align:left}.slot-machine,.definition-grid{grid-template-columns:1fr}.slot-choices{grid-template-columns:repeat(2,1fr)}
+.word-pair{grid-template-columns:1fr 42px 1fr}.word-pair div{font-size:1.1rem;padding:14px 8px}
+}
+
+/* =========================================================
+   DEUTSCHE GÜTE · ABSCHLUSSSIEGEL
+   ========================================================= */
+.badge-section{position:relative;overflow:hidden}
+.badge-lock{
+  padding:28px;text-align:center;border:3px dashed var(--muted);
+  background:repeating-linear-gradient(-45deg,#eee8db 0,#eee8db 10px,#f6f0e4 10px,#f6f0e4 20px)
+}
+.badge-lock strong{display:block;font-size:1.25rem;letter-spacing:.08em;margin-bottom:8px}
+.badge-checks{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:18px 0}
+.badge-check{
+  border:2px solid var(--ink);padding:7px 10px;background:var(--paper);
+  font-size:.76rem;font-weight:900;letter-spacing:.04em
+}
+.badge-check.done{background:#dfe5c9}
+.badge-unlocked{display:none}
+.badge-unlocked.show{display:block;animation:successPulse .65s ease}
+.badge-namebox{
+  max-width:620px;margin:0 auto 24px;padding:22px;border:3px solid var(--ink);background:var(--paper2)
+}
+.badge-namebox label{display:block;font-size:.78rem;font-weight:1000;letter-spacing:.14em;margin-bottom:8px}
+.badge-namebox input{
+  width:100%;border:0;border-bottom:3px solid var(--ink);background:transparent;
+  padding:10px 4px;font:900 1.25rem/1.2 inherit;outline:none
+}
+.seal-card{
+  max-width:720px;margin:28px auto 0;padding:30px 22px;border:3px solid var(--ink);
+  background:#efe8d8;box-shadow:8px 8px 0 var(--ink);text-align:center
+}
+.quality-seal{
+  --seal:#27352d;
+  width:min(390px,88vw);aspect-ratio:1;margin:0 auto 22px;position:relative;
+  display:grid;place-items:center;border-radius:50%;
+  background:
+    radial-gradient(circle at center,transparent 0 53%,var(--seal) 53.4% 54.8%,transparent 55.2% 61%,var(--seal) 61.4% 62.5%,transparent 62.9%),
+    #e9e0cc;
+  border:6px double var(--seal);
+  box-shadow:0 0 0 4px #e9e0cc,0 0 0 7px var(--seal);
+}
+.quality-seal::before{
+  content:"✦  ✦  ✦  ✦  ✦  ✦  ✦  ✦  ✦";
+  position:absolute;left:0;right:0;top:30px;text-align:center;
+  font-size:.62rem;letter-spacing:.26em;color:var(--seal);white-space:nowrap
+}
+.seal-inner{
+  width:68%;height:69%;color:var(--seal);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;text-align:center
+}
+.seal-top{
+  width:100%;font-family:"Germania One","Times New Roman",serif;
+  font-size:clamp(.95rem,2.6vw,1.28rem);font-weight:400;letter-spacing:.10em;
+  border-bottom:2px solid var(--seal);padding:0 2px 7px;margin-bottom:7px;
+  white-space:nowrap
+}
+.seal-emblem{height:62px;display:flex;align-items:center;justify-content:center;margin:0}
+.seal-emblem svg{
+  width:108px;height:58px;fill:none;stroke:var(--seal);stroke-width:4.5;
+  stroke-linecap:round;stroke-linejoin:round
+}
+.seal-main{
+  font-family:"Germania One","Times New Roman",serif;
+  font-size:clamp(1rem,3.2vw,1.42rem);font-weight:400;line-height:.92;
+  letter-spacing:.035em;margin-top:1px
+}
+.seal-points{
+  font-family:"Oswald",Arial,sans-serif;
+  font-size:clamp(1.05rem,3.5vw,1.55rem);font-weight:700;
+  letter-spacing:.035em;margin-top:9px;white-space:nowrap
+}
+.certificate-name{
+  font-family:"Oswald",Arial,sans-serif;font-size:1.42rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.09em;margin:8px 0
+}
+.certificate-meta{
+  font-family:"Oswald",Arial,sans-serif;font-size:.72rem;font-weight:600;
+  letter-spacing:.075em;color:var(--muted);line-height:1.4
+}
+.certificate-rule{height:2px;background:var(--ink);max-width:420px;margin:13px auto}
+.badge-hint{font-size:.75rem;color:var(--muted);margin-top:14px}
+@media(max-width:560px){
+  .quality-seal{width:min(315px,82vw)}
+  .quality-seal::before{top:24px;font-size:.5rem}
+  .seal-inner{width:70%;height:70%}
+  .seal-emblem{height:52px}.seal-emblem svg{width:94px;height:50px}
+  .seal-top{font-size:1rem}
+  .seal-main{font-size:1.08rem}
+  .seal-points{font-size:1.18rem}
+}.seal-emblem svg{width:108px;height:58px}
+}
+
+
+.sentence-workshop{display:grid;gap:18px}
+.sentence-row{
+  border:2px solid var(--ink);background:#eee7d7;padding:14px 14px 12px;
+  transition:background .25s ease,box-shadow .25s ease,transform .2s ease
+}
+.sentence-row.solved{
+  background:#dfe5c9;box-shadow:inset 0 0 0 3px rgba(73,96,62,.18)
+}
+.sentence-row-head{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  margin-bottom:10px;font-family:"Oswald",Arial,sans-serif;font-weight:700;
+  letter-spacing:.08em;font-size:.78rem
+}
+.sentence-status{color:var(--muted)}
+.sentence-row.solved .sentence-status{color:#49603e}
+.sentence-row .sentence-board{min-height:72px}
+.sentence-row .bank{margin-top:10px;min-height:66px}
+.sentence-row.solved .bank{display:none}
+.sentence-row.solved .sentence-board{
+  border-style:solid;background:#edf1df;pointer-events:none
+}
+.sentence-row.solved .piece{cursor:default;box-shadow:2px 3px 0 rgba(32,37,34,.12)}
+.sentence-mini-reset{
+  border:1px solid var(--ink);background:transparent;padding:4px 8px;cursor:pointer;
+  font-size:.68rem;font-weight:800;letter-spacing:.05em
+}
+.sentence-mini-reset:hover{background:var(--paper2)}
+.sentence-row.solved .sentence-mini-reset{display:none}
+@media(max-width:650px){
+  .sentence-row{padding:11px}
+  .sentence-row .piece{padding:11px 20px;min-height:50px}
+}
+
+</style>
+</head>
+<body>
+<header><div class="header-inner">
+<div class="brand"><small>SPRACHLABOR · BAUKASTEN 01</small><h1>Syntax & Bedeutung</h1><p>Hauptsatz · Nebensatz · Konjunktionen · Denotation & Konnotation</p></div>
+<div class="progress-wrap"><div class="progress-label"><span>FORTSCHRITT</span><span id="progressText">0 / 4</span></div><div class="progress-track"><div class="progress-bar" id="progressBar"></div></div></div>
+</div></header>
+<main>
+
+<section class="section">
+<div class="section-head"><div class="section-no">01</div><div class="section-title"><div class="kicker">BAUPLAN</div><h2>Wie ist der Satz gebaut?</h2><p>Setze die grammatischen Bauteile in die richtige Reihenfolge. Hier arbeitest du bewusst mit S, V, A und K.</p></div></div>
+<div class="section-body">
+<div class="legend"><span>S = Subjekt</span><span>V = Verb</span><span>A = Akkusativ</span><span>K = Konjunktion</span></div>
+<div class="lab-card">
+<h3>HAUPTSATZ & NEBENSATZ · BAUPLÄNE</h3>
+<div id="allStructures"></div>
+<p class="note">Setze pro Zeile S, V, A und K in die richtige Reihenfolge. Du kannst ziehen oder ein Teil anklicken und anschließend in den Zielbereich klicken.</p>
+</div></div></section>
+
+<section class="section">
+<div class="section-head"><div class="section-no">02</div><div class="section-title"><div class="kicker">WERKSTATT</div><h2>Baue die Sätze</h2><p>Alle zehn Sätze liegen gleichzeitig auf der Werkbank. Sobald ein Satz korrekt zusammengesetzt ist, wird er automatisch als richtig erkannt.</p></div></div>
+<div class="section-body">
+<div class="puzzle-top">
+  <div><strong>SATZWERKSTATT · 10 AUFGABEN</strong><div class="note">Ziehe die Teile oder tippe sie nacheinander an. Kein Prüfen nötig.</div></div>
+  <div class="counter" id="sentenceScore">0 / 10 GELÖST</div>
+</div>
+<div id="sentenceWorkshop" class="sentence-workshop"></div>
+<div class="feedback" id="sentenceFeedback"></div>
+</div></section>
+
+<section class="section">
+<div class="section-head"><div class="section-no">03</div><div class="section-title"><div class="kicker">AUTOMAT</div><h2>Wo steht die Konjunktion?</h2><p>Drehe den Automaten und entscheide: P0, P1, P3 oder Nebensatz.</p></div></div>
+<div class="section-body">
+<div class="slot-machine"><div class="reel"><div><div class="note" style="margin-bottom:10px;font-weight:900">KONJUNKTION / KONNEKTOR</div><div class="reel-word" id="reelWord">—</div></div></div>
+<div class="money"><small>DEINE BANK</small><strong id="moneyValue">0 €</strong><button class="small-btn" id="spinBtn" style="margin-top:16px;background:var(--paper);color:var(--ink)">DREHEN</button></div></div>
+<div class="slot-choices"><button class="slot-choice" data-choice="P0">P0</button><button class="slot-choice" data-choice="P1">P1</button><button class="slot-choice" data-choice="P3">P3</button><button class="slot-choice" data-choice="NS">NS</button></div>
+<div class="feedback" id="slotFeedback"></div><p class="note">Einige Konnektoren können sowohl auf P1 als auch auf P3 stehen. In diesem Fall werden beide Antworten akzeptiert.</p>
+</div></section>
+
+<section class="section">
+<div class="section-head"><div class="section-no">04</div><div class="section-title"><div class="kicker">BEDEUTUNGSLABOR</div><h2>Denotation oder Konnotation?</h2><p>Finde zuerst den gemeinsamen Bedeutungskern. Danach bestimmst du die zusätzliche Wertung oder Assoziation.</p></div></div>
+<div class="section-body">
+<div class="puzzle-top"><div><strong>WORTPAAR <span id="semIndex">1</span> / 6</strong></div><div class="counter" id="semScore">0 PUNKTE</div></div>
+<div class="word-pair"><div id="neutralWord"></div><div class="arrow">↔</div><div id="markedWord"></div></div>
+<div class="definition-grid"><div class="question-box"><h3>1. Was ist der gemeinsame sachliche Bedeutungskern?</h3><div class="answers" id="denAnswers"></div></div>
+<div class="question-box"><h3>2. Welche zusätzliche Wirkung hat das zweite Wort?</h3><div class="answers" id="conAnswers"></div></div></div>
+<div class="meter">
+<span class="tag"><strong>DENOTATION</strong> = sachlicher Bedeutungskern<br><small>中文：词语客观、核心的字面意义</small></span>
+<span class="tag"><strong>KONNOTATION</strong> = zusätzliche Wertung, Gefühle oder Assoziationen<br><small>中文：词语在核心意义之外附带的评价、感情色彩或联想</small></span>
+</div>
+<div class="controls"><button class="small-btn" id="nextSem">NÄCHSTES WORTPAAR</button></div><div class="feedback" id="semFeedback"></div>
+<div class="summary" id="summaryBox"><h3>LABOR ABGESCHLOSSEN</h3><div>Du hast alle vier Stationen bearbeitet.</div></div>
+</div></section>
+
+
+<section class="section badge-section" id="badgeSection">
+<div class="section-head"><div class="section-no">05</div><div class="section-title"><div class="kicker">GÜTEPRÜFUNG</div><h2>Deine geprüfte Leistung</h2><p>Das Gütesiegel wird freigeschaltet, wenn alle Laborstationen bestanden sind und deine Bank mindestens 1000 Punkte erreicht hat.</p></div></div>
+<div class="section-body">
+  <div class="badge-lock" id="badgeLock">
+    <strong>PRÜFSIEGEL NOCH GESPERRT</strong>
+    <div>Schließe zuerst alle Bedingungen ab.</div>
+    <div class="badge-checks">
+      <span class="badge-check" id="badgeC1">BAUPLAN</span>
+      <span class="badge-check" id="badgeC2">10 SÄTZE</span>
+      <span class="badge-check" id="badgeC3">1000 PUNKTE</span>
+      <span class="badge-check" id="badgeC4">BEDEUTUNG</span>
+    </div>
+  </div>
+
+  <div class="badge-unlocked" id="badgeUnlocked">
+    <div class="badge-namebox">
+      <label for="studentName">NAME / 姓名</label>
+      <input id="studentName" maxlength="40" autocomplete="off" placeholder="Vor- und Nachname">
+      <div class="controls"><button class="small-btn" id="makeBadge">GÜTESIEGEL AUSSTELLEN</button></div>
+    </div>
+
+    <div class="seal-card" id="sealCard" hidden>
+      <div class="quality-seal" aria-label="Deutsche Güte – geprüfte Leistung – 1000 Punkte">
+        <div class="seal-inner">
+          <div class="seal-top">DEUTSCHE GÜTE</div>
+          <div class="seal-emblem" aria-hidden="true">
+            <svg viewBox="0 0 150 80">
+              <!-- deliberately abstract: wings + oak sprigs, not an official eagle -->
+              <path d="M75 17 L64 31 L75 28 L86 31 Z"/>
+              <path d="M68 34 C51 25 38 25 25 31 C39 35 47 42 55 50"/>
+              <path d="M82 34 C99 25 112 25 125 31 C111 35 103 42 95 50"/>
+              <path d="M75 29 L75 57"/>
+              <path d="M61 55 C51 53 42 57 35 65 M89 55 C99 53 108 57 115 65"/>
+              <path d="M44 61 l-7 -7 M49 58 l-3 -9 M106 61 l7 -7 M101 58 l3 -9"/>
+              <path d="M66 61 Q75 68 84 61"/>
+            </svg>
+          </div>
+          <div class="seal-main">GEPRÜFTE<br>LEISTUNG</div>
+          <div class="seal-points">1000 PUNKTE</div>
+        </div>
+      </div>
+      <div class="certificate-name" id="badgeName">—</div>
+      <div class="certificate-rule"></div>
+      <div class="certificate-meta">SPRACHLABOR · SYNTAX &amp; BEDEUTUNG · EXTRA-AUFGABE 01</div>
+      <div class="certificate-meta" id="badgeMeta"></div>
+      <div class="badge-hint">Dieses Siegel bestätigt den erfolgreichen Abschluss dieser Übungsseite.</div>
+    </div>
+  </div>
+</div>
+</section>
+
+</main>
+<script>
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)], shuffle=a=>[...a].sort(()=>Math.random()-.5);
+const completed=[false,false,false,false];
+function updateProgress(){
+  const n=completed.filter(Boolean).length;
+  $('#progressText').textContent=`${n} / 4`;
+  $('#progressBar').style.width=`${n*25}%`;
+  if(n===4)$('#summaryBox').classList.add('show');
+  updateBadgeGate();
+}
+function makePiece(text,container){const el=document.createElement('div');el.className='piece';el.textContent=text;el.draggable=true;el.dataset.value=text;
+el.addEventListener('dragstart',()=>el.classList.add('dragging'));el.addEventListener('dragend',()=>el.classList.remove('dragging'));
+el.addEventListener('click',()=>{$$('.piece.selected').forEach(p=>p.classList.remove('selected'));el.classList.add('selected')});container.appendChild(el);return el}
+function enableDrop(container){container.addEventListener('dragover',e=>e.preventDefault());container.addEventListener('drop',e=>{e.preventDefault();const p=$('.piece.dragging');if(p)container.appendChild(p)});
+container.addEventListener('click',e=>{if(e.target.closest('.piece'))return;const p=$('.piece.selected');if(p){container.appendChild(p);p.classList.remove('selected')}})}
+
+const structures=[
+{title:'HS · P0',answer:['K','S','V','A']},
+{title:'HS · P1',answer:['K','V','S','A']},
+{title:'HS · P3',answer:['S','V','K','A']},
+{title:'NS',answer:['K','S','A','V']}];
+const structureSolved=new Set();
+
+function renderAllStructures(){
+  const host=$('#allStructures');host.innerHTML='';
+  structures.forEach((s,i)=>{
+    const row=document.createElement('div');row.className='formula';
+    const label=document.createElement('div');label.className='formula-label';label.textContent=s.title;
+    const work=document.createElement('div');work.className='structure-work';
+    const drop=document.createElement('div');drop.className='drop-zone';drop.id=`structureDrop${i}`;
+    const bank=document.createElement('div');bank.className='bank';bank.style.marginTop='0';bank.id=`structureBank${i}`;
+    const feedback=document.createElement('div');feedback.className='structure-row-feedback';feedback.id=`structureFeedback${i}`;
+    work.append(drop,bank,feedback);row.append(label,work);host.appendChild(row);
+    enableDrop(drop);enableDrop(bank);
+    shuffle(['S','V','A','K']).forEach(x=>makePiece(x,bank));
+    drop.addEventListener('dblclick',()=>checkStructureRow(i));
+  });
+}
+function checkStructureRow(i){
+  const drop=$(`#structureDrop${i}`),f=$(`#structureFeedback${i}`);
+  const vals=[...drop.querySelectorAll('.piece')].map(x=>x.dataset.value);
+  const ok=JSON.stringify(vals)===JSON.stringify(structures[i].answer);
+  if(ok){
+    f.textContent='✓';f.style.color='#49603e';
+    [...drop.querySelectorAll('.piece')].forEach((x,j)=>setTimeout(()=>x.classList.add('correct'),j*55));
+    drop.classList.remove('success-pop');void drop.offsetWidth;drop.classList.add('success-pop');
+    structureSolved.add(i);
+    if(structureSolved.size===4){completed[0]=true;updateProgress()}
+  }else if(vals.length===4){f.textContent='×';f.style.color='#a13f2c'}
+  else{f.textContent='';}
+}
+document.addEventListener('click',e=>{
+  if(e.target.closest('#allStructures .drop-zone')){
+    const dz=e.target.closest('.drop-zone');
+    setTimeout(()=>checkStructureRow(Number(dz.id.replace('structureDrop',''))),60);
+  }
+});
+renderAllStructures();
+
+const sentencePuzzles=[
+['Ich','kaufe','ein Auto,','weil','ich','es','brauche.'],
+['Sie','hat','keine Schuhe,','denn','sie','hat','sie','vergessen.'],
+['Ilse','hat','Sport','gemacht,','dann','aß','sie','einen Döner.'],
+['Gernot','spielt','Fußball,','obwohl','er','keine Beine','hat.'],
+['Wir','haben','ein großes Problem,','deswegen','rufen','wir','unsere Mutter','an.'],
+['Die Mannschaft','hat','das Spiel','verloren.','Der Trainer','ist','deswegen','sehr böse.'],
+['Mein Vater','hat','gesagt,','dass','ich','nicht in den Club','darf.'],
+['Das Kind','hat','Angst,','auf der Toilette','zu sitzen.'],
+['Du','verkaufst','deinen Hund','oder','wir','haben','diesen Monat','kein Essen.'],
+['Tante Erna','hat','viel Geld.','Trotzdem','gibt','sie','mir','nichts!']
+];
+const sentenceSolved=new Set();
+
+function renderSentenceWorkshop(){
+  const host=$('#sentenceWorkshop');
+  host.innerHTML='';
+  sentencePuzzles.forEach((answer,i)=>{
+    const row=document.createElement('div');
+    row.className='sentence-row';
+    row.dataset.index=i;
+
+    const head=document.createElement('div');
+    head.className='sentence-row-head';
+
+    const label=document.createElement('span');
+    label.textContent=`SATZ ${String(i+1).padStart(2,'0')}`;
+
+    const right=document.createElement('div');
+    right.style.display='flex';
+    right.style.alignItems='center';
+    right.style.gap='10px';
+
+    const status=document.createElement('span');
+    status.className='sentence-status';
+    status.id=`sentenceStatus${i}`;
+    status.textContent='OFFEN';
+
+    const reset=document.createElement('button');
+    reset.className='sentence-mini-reset';
+    reset.type='button';
+    reset.textContent='NEU MISCHEN';
+    reset.onclick=()=>resetSentenceRow(i);
+
+    right.append(status,reset);
+    head.append(label,right);
+
+    const drop=document.createElement('div');
+    drop.className='sentence-board';
+    drop.id=`sentenceDrop${i}`;
+
+    const bank=document.createElement('div');
+    bank.className='bank';
+    bank.id=`sentenceBank${i}`;
+
+    row.append(head,drop,bank);
+    host.appendChild(row);
+
+    enableDrop(drop);
+    enableDrop(bank);
+    shuffle(answer).forEach(x=>makePiece(x,bank));
+
+    // QOL: any click/drop/reorder immediately checks the row.
+    row.addEventListener('click',()=>setTimeout(()=>checkSentenceRow(i),50));
+    drop.addEventListener('drop',()=>setTimeout(()=>checkSentenceRow(i),70));
+    bank.addEventListener('drop',()=>setTimeout(()=>checkSentenceRow(i),70));
+
+    // Also catches DOM moves from click-to-place and drag/drop reliably.
+    const observer=new MutationObserver(()=>setTimeout(()=>checkSentenceRow(i),25));
+    observer.observe(drop,{childList:true});
+  });
+}
+
+function resetSentenceRow(i){
+  if(sentenceSolved.has(i))return;
+  const drop=$(`#sentenceDrop${i}`),bank=$(`#sentenceBank${i}`);
+  [...drop.querySelectorAll('.piece'),...bank.querySelectorAll('.piece')].forEach(x=>x.remove());
+  shuffle(sentencePuzzles[i]).forEach(x=>makePiece(x,bank));
+  $(`#sentenceStatus${i}`).textContent='OFFEN';
+}
+
+function checkSentenceRow(i){
+  if(sentenceSolved.has(i))return;
+  const drop=$(`#sentenceDrop${i}`);
+  const vals=[...drop.querySelectorAll('.piece')].map(x=>x.dataset.value);
+  const target=sentencePuzzles[i];
+  if(vals.length!==target.length)return;
+
+  const ok=JSON.stringify(vals)===JSON.stringify(target);
+  const status=$(`#sentenceStatus${i}`);
+  if(!ok){
+    status.textContent='NOCH NICHT';
+    status.style.color='#a13f2c';
+    setTimeout(()=>{
+      if(!sentenceSolved.has(i)){
+        status.textContent='OFFEN';
+        status.style.color='';
+      }
+    },650);
+    return;
+  }
+
+  sentenceSolved.add(i);
+  const row=drop.closest('.sentence-row');
+  row.classList.add('solved');
+  status.textContent='✓ GENAU SO!';
+  status.style.color='';
+
+  [...drop.querySelectorAll('.piece')].forEach((x,j)=>{
+    x.draggable=false;
+    setTimeout(()=>x.classList.add('correct'),j*40);
+  });
+  drop.classList.remove('success-pop');
+  void drop.offsetWidth;
+  drop.classList.add('success-pop');
+
+  $('#sentenceScore').textContent=`${sentenceSolved.size} / ${sentencePuzzles.length} GELÖST`;
+  $('#sentenceScore').classList.remove('score-pop');
+  void $('#sentenceScore').offsetWidth;
+  $('#sentenceScore').classList.add('score-pop');
+
+  if(sentenceSolved.size===sentencePuzzles.length){
+    completed[1]=true;
+    $('#sentenceFeedback').textContent='✓ SAUBER! ALLE 10 SÄTZE GELÖST.';
+    $('#sentenceFeedback').className='feedback good';
+    updateProgress();
+  }else{
+    updateBadgeGate();
+  }
+}
+renderSentenceWorkshop();
+
+const connectors=[{w:'und',a:['P0']},{w:'aber',a:['P0']},{w:'denn',a:['P0']},{w:'sondern',a:['P0']},{w:'oder',a:['P0']},{w:'weil',a:['NS']},{w:'obwohl',a:['NS']},{w:'dass',a:['NS']},{w:'wenn',a:['NS']},{w:'dann',a:['P1','P3']},{w:'deswegen',a:['P1','P3']},{w:'trotzdem',a:['P1','P3']},{w:'deshalb',a:['P1','P3']},{w:'außerdem',a:['P1','P3']}];
+let currentConnector=null,money=0,slotCorrect=0,spinning=false;
+function spin(){if(spinning)return;spinning=true;$('#slotFeedback').textContent='';let ticks=0;const id=setInterval(()=>{$('#reelWord').textContent=connectors[Math.floor(Math.random()*connectors.length)].w;if(++ticks>10){clearInterval(id);currentConnector=connectors[Math.floor(Math.random()*connectors.length)];$('#reelWord').textContent=currentConnector.w;spinning=false}},55)}
+$('#spinBtn').onclick=spin;$$('.slot-choice').forEach(b=>b.onclick=()=>{if(!currentConnector||spinning)return;const ok=currentConnector.a.includes(b.dataset.choice),f=$('#slotFeedback');
+if(ok){
+money+=100;slotCorrect++;$('#moneyValue').textContent=`${money} €`;
+$('#moneyValue').classList.remove('score-pop');void $('#moneyValue').offsetWidth;$('#moneyValue').classList.add('score-pop');
+f.textContent=`✓ Richtig. +100 € · ${currentConnector.w.toUpperCase()} → ${currentConnector.a.join(' / ')}`;f.className='feedback good';
+b.classList.add('good-flash');setTimeout(()=>b.classList.remove('good-flash'),500);
+if(money>=1000){completed[2]=true;updateProgress()}currentConnector=null;setTimeout(spin,650)
+}
+else{f.textContent='Nicht ganz. Versuch eine andere Position.';f.className='feedback bad'}});spin();
+
+const semantics=[
+{pair:['essen','fressen'],
+den:{correct:'Nahrung zu sich nehmen||食用食物',wrong:['etwas kochen||烹饪食物','Hunger bekommen||感到饥饿','Lebensmittel kaufen||购买食品']},
+con:{correct:'abwertend; wirkt gierig oder unzivilisiert||贬义；给人贪吃、粗野或不文明的感觉',wrong:['besonders höflich||特别礼貌','besonders gesund||特别健康','besonders teuer||特别昂贵']}},
+{pair:['sprechen','labern'],
+den:{correct:'mündlich etwas sagen||用口头方式说话',wrong:['etwas schreiben||书写某事','jemandem zuhören||听某人说话','eine Sprache lernen||学习一门语言']},
+con:{correct:'abwertend; wirkt langatmig oder inhaltsarm||贬义；给人啰嗦或内容空洞的感觉',wrong:['sehr wissenschaftlich||非常学术','besonders leise||特别小声','besonders respektvoll||特别尊重']}},
+{pair:['sparsam','geizig'],
+den:{correct:'wenig Geld oder Material ausgeben||少花钱或少使用材料',wrong:['sehr viel besitzen||拥有很多东西','Schulden machen||负债','etwas verschenken||赠送某物']},
+con:{correct:'negativ; übertrieben ungern etwas abgeben||负面；过分不愿意把钱或东西给别人',wrong:['großzügig||慷慨','modisch||时髦','mutig||勇敢']}},
+{pair:['trinken','saufen'],
+den:{correct:'Flüssigkeit zu sich nehmen||饮用液体',wrong:['etwas einschenken||倒入饮料','Durst bekommen||感到口渴','etwas bestellen||点某种饮料']},
+con:{correct:'umgangssprachlich und oft abwertend; meist viel oder übermäßig Alkohol trinken||口语且常带贬义；通常指大量或过量饮酒',wrong:['besonders höflich||特别礼貌','besonders langsam trinken||喝得特别慢','medizinisch neutral||医学上的中性表达']}},
+{pair:['Kind','Göre'],
+den:{correct:'junger Mensch||年幼的人；儿童',wrong:['älterer Mensch||年长的人','Verwandter||亲属','Universitätsstudent||大学生']},
+con:{correct:'abwertend; frech oder unangenehm||贬义；表示小孩顽皮、无礼或令人讨厌',wrong:['sehr höflich||非常礼貌','besonders klug||特别聪明','förmlich und neutral||正式且中性']}},
+{pair:['sterben','verrecken'],
+den:{correct:'das Leben endet||生命结束；死亡',wrong:['krank werden||生病','verschwinden||消失','schlafen||睡觉']},
+con:{correct:'sehr derb und abwertend||非常粗俗并带强烈贬义',wrong:['besonders feierlich||特别庄重','medizinisch neutral||医学上的中性表达','höflich-euphemistisch||礼貌而委婉']}}];
+let semIdx=0,semPoints=0;const semDone=new Set();const semCorrect=semantics.map(()=>({den:false,con:false}));
+function renderAnswers(box,data,type){
+  box.innerHTML='';box.dataset.locked='0';
+  shuffle([data.correct,...data.wrong]).forEach(raw=>{
+    const [de,cn]=raw.split('||');
+    const b=document.createElement('button');b.className='answer-btn';b.dataset.raw=raw;
+    b.innerHTML=`<strong>${de}</strong><br><span style="font-weight:600;color:var(--muted)">${cn||''}</span>`;
+    b.onclick=()=>{
+      if(box.dataset.locked==='1')return;
+      const ok=raw===data.correct;
+      b.classList.add(ok?'correct-choice':'wrong-choice');
+      const cnDef=type==='den'?'Denotation = sachlicher Bedeutungskern · 中文：客观核心意义':'Konnotation = zusätzliche Wertung / Assoziation · 中文：附加的评价、感情色彩或联想';
+      if(ok){
+        box.dataset.locked='1';
+        semCorrect[semIdx][type]=true;
+        semPoints++;
+        $('#semScore').textContent=`${semPoints} PUNKTE`;
+        $('#semScore').classList.remove('score-pop');void $('#semScore').offsetWidth;$('#semScore').classList.add('score-pop');
+        $('#semFeedback').textContent='✓ Richtig. '+cnDef;$('#semFeedback').className='feedback good';
+        if(semCorrect[semIdx].den&&semCorrect[semIdx].con){
+          semDone.add(semIdx);
+          if(semDone.size===semantics.length){completed[3]=true;updateProgress()}
+        }
+      }else{
+        $('#semFeedback').textContent='Noch nicht. Versuch es noch einmal. '+cnDef;$('#semFeedback').className='feedback bad';
+        setTimeout(()=>b.classList.remove('wrong-choice'),500);
+      }
+    };
+    box.appendChild(b);
+  })
+}
+function renderSemantic(){const s=semantics[semIdx];$('#semIndex').textContent=semIdx+1;$('#neutralWord').textContent=s.pair[0];$('#markedWord').textContent=s.pair[1];$('#semFeedback').textContent='';renderAnswers($('#denAnswers'),s.den,'den');renderAnswers($('#conAnswers'),s.con,'con')}
+
+function updateBadgeGate(){
+  const checks=[
+    completed[0],
+    sentenceSolved.size===sentencePuzzles.length,
+    money>=1000,
+    completed[3]
+  ];
+  checks.forEach((ok,i)=>{
+    const el=$(`#badgeC${i+1}`);
+    if(el)el.classList.toggle('done',ok);
+  });
+  const ready=checks.every(Boolean);
+  if($('#badgeLock'))$('#badgeLock').style.display=ready?'none':'block';
+  if($('#badgeUnlocked'))$('#badgeUnlocked').classList.toggle('show',ready);
+}
+function makeCheckCode(){
+  const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let out='SL01-';
+  for(let i=0;i<4;i++)out+=chars[Math.floor(Math.random()*chars.length)];
+  return out;
+}
+$('#makeBadge').onclick=()=>{
+  const name=$('#studentName').value.trim();
+  if(!name){
+    $('#studentName').focus();
+    $('#studentName').style.borderBottomColor='#a13f2c';
+    return;
+  }
+  $('#studentName').style.borderBottomColor='';
+  $('#badgeName').textContent=name;
+  const now=new Date();
+  const date=now.toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric'});
+  const time=now.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});
+  $('#badgeMeta').textContent=`${date} · ${time} · ${makeCheckCode()}`;
+  $('#sealCard').hidden=false;
+  $('#sealCard').classList.remove('success-pop');void $('#sealCard').offsetWidth;$('#sealCard').classList.add('success-pop');
+  $('#sealCard').scrollIntoView({behavior:'smooth',block:'center'});
+};
+$('#nextSem').onclick=()=>{semIdx=(semIdx+1)%semantics.length;renderSemantic()};
+renderSemantic();updateProgress();
+
+</script>
+</body>
+</html>
