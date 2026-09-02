@@ -1,1 +1,390 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <title>Oberstufe · Sprachlabor</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Germania+One&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --ink: #232a26;
+      --paper: #f3ecdc;
+      --paper2: #e7dfcd;
+      --panel: #d6cebb;
+      --muted: #6f726b;
+      --green: #718266;
+      --yellow: #c7a95d;
+      --red: #9b5e4c;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background:
+        linear-gradient(rgba(35,42,38,.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(35,42,38,.035) 1px, transparent 1px),
+        var(--paper);
+      background-size: 28px 28px;
+      color: var(--ink);
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .page {
+      width: min(1180px, 92vw);
+      margin: 0 auto;
+      padding: 40px 0 70px;
+    }
+
+    .masthead {
+      border: 4px solid var(--ink);
+      background: var(--paper2);
+      padding: 24px 28px;
+      box-shadow: 8px 8px 0 var(--ink);
+      margin-bottom: 38px;
+    }
+
+    .kicker {
+      font-family: "Oswald", sans-serif;
+      font-size: .78rem;
+      font-weight: 700;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    h1 {
+      margin: 0;
+      font-family: "Germania One", serif;
+      font-size: clamp(2.5rem, 7vw, 5rem);
+      font-weight: 400;
+      line-height: .95;
+      letter-spacing: .015em;
+    }
+
+    .subtitle {
+      margin-top: 16px;
+      max-width: 720px;
+      font-family: "Oswald", sans-serif;
+      font-size: 1.05rem;
+      line-height: 1.5;
+      color: var(--muted);
+    }
+
+    .lab-meta {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 22px;
+    }
+
+    .meta-tag {
+      border: 2px solid var(--ink);
+      padding: 7px 10px;
+      background: var(--paper);
+      font-family: "Oswald", sans-serif;
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .section-no {
+      width: 58px;
+      height: 58px;
+      display: grid;
+      place-items: center;
+      border: 3px solid var(--ink);
+      background: var(--yellow);
+      font-family: "Oswald", sans-serif;
+      font-weight: 700;
+      font-size: 1.35rem;
+    }
+
+    .section-title h2 {
+      margin: 0;
+      font-family: "Oswald", sans-serif;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      font-size: 1.6rem;
+    }
+
+    .section-title p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: .92rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 20px;
+    }
+
+    .lesson {
+      position: relative;
+      display: block;
+      text-decoration: none;
+      color: inherit;
+      min-height: 220px;
+      border: 3px solid var(--ink);
+      background: var(--paper2);
+      padding: 22px;
+      box-shadow: 6px 6px 0 var(--ink);
+      transition:
+        transform .14s ease,
+        box-shadow .14s ease,
+        background .14s ease;
+    }
+
+    .lesson:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 9px 9px 0 var(--ink);
+      background: #eee6d4;
+    }
+
+    .lesson-number {
+      font-family: "Oswald", sans-serif;
+      font-size: .8rem;
+      letter-spacing: .16em;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    .lesson h3 {
+      margin: 18px 0 8px;
+      font-family: "Germania One", serif;
+      font-size: 2.1rem;
+      font-weight: 400;
+      line-height: 1;
+    }
+
+    .lesson p {
+      margin: 0;
+      max-width: 470px;
+      line-height: 1.5;
+      color: var(--muted);
+      font-size: .94rem;
+    }
+
+    .lesson-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: 20px;
+    }
+
+    .lesson-tag {
+      padding: 5px 8px;
+      border: 1px solid var(--ink);
+      background: var(--paper);
+      font-family: "Oswald", sans-serif;
+      font-size: .65rem;
+      font-weight: 700;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+    }
+
+    .open-label {
+      position: absolute;
+      right: 18px;
+      bottom: 16px;
+      font-family: "Oswald", sans-serif;
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+    }
+
+    .lesson.disabled {
+      opacity: .42;
+      pointer-events: none;
+      box-shadow: 4px 4px 0 var(--muted);
+    }
+
+    footer {
+      margin-top: 46px;
+      padding-top: 18px;
+      border-top: 2px solid var(--ink);
+      color: var(--muted);
+      font-family: "Oswald", sans-serif;
+      font-size: .72rem;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    @media (max-width: 760px) {
+      .page {
+        width: min(94vw, 680px);
+        padding-top: 20px;
+      }
+
+      .masthead {
+        padding: 20px;
+        box-shadow: 5px 5px 0 var(--ink);
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .lesson {
+        min-height: 200px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="page">
+
+    <header class="masthead">
+      <div class="kicker">Oberstufe · Grammatikwerkstatt</div>
+
+      <h1>Sprachlabor</h1>
+
+      <div class="subtitle">
+        Interaktive Übungen zu Syntax, Grammatik und Bedeutung.
+        Baue Strukturen, löse Aufgaben und absolviere die Güteprüfung.
+      </div>
+
+      <div class="lab-meta">
+        <span class="meta-tag">Baukasten</span>
+        <span class="meta-tag">Syntax</span>
+        <span class="meta-tag">Bedeutung</span>
+        <span class="meta-tag">Extra-Aufgaben</span>
+      </div>
+    </header>
+
+
+    <section>
+
+      <div class="section-head">
+        <div class="section-no">01</div>
+
+        <div class="section-title">
+          <h2>Laborstationen</h2>
+          <p>Wähle eine Lektion.</p>
+        </div>
+      </div>
+
+
+      <div class="grid">
+
+        <!-- LEKTION 01 -->
+        <a class="lesson" href="01/">
+
+          <div class="lesson-number">
+            Laborstation 01
+          </div>
+
+          <h3>Syntax &amp; Bedeutung</h3>
+
+          <p>
+            Hauptsatz, Nebensatz, Satzpositionen,
+            Konjunktionen sowie Denotation und Konnotation.
+          </p>
+
+          <div class="lesson-tags">
+            <span class="lesson-tag">P0 · P1 · P3</span>
+            <span class="lesson-tag">Nebensatz</span>
+            <span class="lesson-tag">Satzpuzzle</span>
+            <span class="lesson-tag">Slot</span>
+            <span class="lesson-tag">Gütesiegel</span>
+          </div>
+
+          <div class="open-label">
+            ÖFFNEN →
+          </div>
+
+        </a>
+
+
+        <!-- LEKTION 02 -->
+        <div class="lesson disabled">
+
+          <div class="lesson-number">
+            Laborstation 02
+          </div>
+
+          <h3>In Vorbereitung</h3>
+
+          <p>
+            Weitere Grammatikstation folgt.
+          </p>
+
+          <div class="lesson-tags">
+            <span class="lesson-tag">Demnächst</span>
+          </div>
+
+        </div>
+
+
+        <!-- LEKTION 03 -->
+        <div class="lesson disabled">
+
+          <div class="lesson-number">
+            Laborstation 03
+          </div>
+
+          <h3>In Vorbereitung</h3>
+
+          <p>
+            Weitere Grammatikstation folgt.
+          </p>
+
+          <div class="lesson-tags">
+            <span class="lesson-tag">Demnächst</span>
+          </div>
+
+        </div>
+
+
+        <!-- LEKTION 04 -->
+        <div class="lesson disabled">
+
+          <div class="lesson-number">
+            Laborstation 04
+          </div>
+
+          <h3>In Vorbereitung</h3>
+
+          <p>
+            Weitere Grammatikstation folgt.
+          </p>
+
+          <div class="lesson-tags">
+            <span class="lesson-tag">Demnächst</span>
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <footer>
+      Sprachlabor · Oberstufe · SZTU
+    </footer>
+
+  </main>
+
+</body>
+</html>
